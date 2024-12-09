@@ -169,3 +169,22 @@ body {
 .details {
     margin-bottom: 0px;
 }
+
+.home-page .book {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: space-between; /* Spread out details and actions */
+    margin-bottom: 20px; /* Add some spacing between books */
+    border: 1px solid #ddd; /* Optional: Add a border for better visibility */
+    padding: 10px; /* Optional: Add some padding */
+}
+
+.home-page .book-details {
+    flex: 1; /* Take up available space for the details */
+}
+
+.home-page .book-actions {
+    display: flex;
+    flex-direction: column; /* Stack the buttons vertically */
+    gap: 10px; /* Add spacing between buttons */
+}
