@@ -20,38 +20,46 @@
         </header>
     </div>
 
-
-    <div class="container mt-4">
-        <h1>Possible Trade Matches</h1>
-    
+    <div class="content-container">
+        <h1 class="trade-matches">Possible Trade Matches</h1>
+        <section class="book-list-container">
         {% if matches %}
             <ul class="list-group">
                 {% for match in matches %}
                 <p>
-                    <a href="{{ url_for('trade_request', requester_id=match['id']) }}">Trade with {{ match['name'] }}</a>
-                    <ul>
-                        <li>Give books: 
-                            <ul>
-                                {% for book in match['give_books'] %}
-                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        <li>Receive books: 
-                            <ul>
+                    <a href="{{ url_for('trade_request', requester_id=match['id']) }}">
+                        <button type="button" class="search-button">
+                            Trade with {{ match['name'] }}
+                        </button>
+                    </a>
+                        <h2>Give books:</h2>
+                                <div class="book-list-container">
+                                    {% for book in match['give_books'] %}
+                                    <div class="book">
+                                        <div class="book-details">
+                                            <h3 class="book-title">{{ book['title'] }}</h3>
+                                            <p class="book-author">by {{ book['author'] }}</p>
+                                        </div>
+                                    </div>
+                                        <!-- <li>{{ book['title'] }} by {{ book['author'] }}</li> -->
+                                    {% endfor %}
+                                </div>
+                        <h2>Receive books</h2>
                                 {% for book in match['receive_books'] %}
-                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
+                                <div class="book">
+                                    <div class="book-details">
+                                        <h3 class="book-title">{{ book['title'] }}</h3>
+                                        <p class="book-author">by {{ book['author'] }}</p>
+                                    </div>
+                                </div>
                                 {% endfor %}
-                            </ul>
-                        </li>
-                    </ul>
                 </p>
                  {% endfor %}
-
             </ul>
         {% else %}
             <p>No matches found!</p>
         {% endif %}
+    </section>
     </div>
 
 
