@@ -26,7 +26,7 @@
             <div class="user-greeting">
                 <h1>Hi {{ name }}!</h1>
             </div>
-            <h2>your inventory</h2>
+            <h2>Your Inventory</h2>
             <div class="book-list">
                 {% for book in inventory %}
                 <div class="book">
@@ -35,11 +35,15 @@
                         <p class="book-author">by {{ book.author }}</p>
                         <p class="book-description">{{ book.description }}</p>
                     </div>
-                    <button class="delete-button">Delete</button>
+                    <!-- Delete book form -->
+                    <form action="{{ url_for('delete_from_inventory') }}" method="POST">
+                        <input type="hidden" name="book_id" value="{{ book._id }}">
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
-        </section>
+        </section>        
 
         <!-- wishlist -->
         <section class="book-list-container">

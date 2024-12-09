@@ -29,14 +29,14 @@ create_login_routes(app)
 def home():
     user_id = flask_login.current_user.id
 
-    # Get the user's wishlist
-    user = db.users.find_one({"_id": ObjectId(user_id)}, {"wishlist": 1})
-    wishlist_ids = user.get("wishlist", [])
+    # Get the user's inventory
+    user = db.users.find_one({"_id": ObjectId(user_id)}, {"inventory": 1})
+    inventory_ids = user.get("inventory", [])
 
-    # Fetch books not in the user's wishlist
+    # Fetch books not in the user's inventory
     books = list(
         db.books.find(
-            {"_id": {"$nin": [ObjectId(book_id) for book_id in wishlist_ids]}},
+            {"_id": {"$nin": [ObjectId(book_id) for book_id in inventory_ids]}},
             {"_id": 1, "title": 1, "author": 1, "description": 1}
         )
     )
@@ -47,17 +47,17 @@ def home():
 
 @app.route('/add', methods=['POST'])
 @flask_login.login_required
-def add_to_wishlist():
+def add_to_inventory():
     user_id = flask_login.current_user.id
     book_id = request.form.get('book_id')
 
     if not book_id:
         return redirect(url_for('home', message='failed_add'))
 
-    # Add the book to the user's wishlist
+    # Add the book to the user's inventory
     result = db.users.update_one(
         {"_id": ObjectId(user_id)},
-        {"$addToSet": {"wishlist": ObjectId(book_id)}}
+        {"$addToSet": {"inventory": ObjectId(book_id)}}
     )
 
     if result.modified_count == 0:
@@ -65,25 +65,25 @@ def add_to_wishlist():
 
     return redirect(url_for('home', message='success_add'))
 
-@app.route('/wishlist/remove', methods=['POST'])
+@app.route('/delete', methods=['POST'])
 @flask_login.login_required
-def remove_from_wishlist():
+def delete_from_inventory():
     user_id = flask_login.current_user.id
     book_id = request.form.get('book_id')
 
     if not book_id:
-        return "Book ID is required", 400
+        return redirect(url_for('user', message='failed_delete'))
 
-    # Update the user's wishlist
+    # Remove the book from the user's inventory
     result = db.users.update_one(
         {"_id": ObjectId(user_id)},
-        {"$pull": {"wishlist": ObjectId(book_id)}}
+        {"$pull": {"inventory": ObjectId(book_id)}}
     )
 
     if result.modified_count == 0:
-        return "Failed to remove book from wishlist", 500
+        return redirect(url_for('user', message='failed_delete'))
 
-    return redirect(url_for('user'))
+    return redirect(url_for('user', message='success_delete'))
 
 @app.route('/search', methods=['GET'])
 @flask_login.login_required
@@ -104,24 +104,30 @@ def search():
 def user():
     user_id = flask_login.current_user.id
 
-    user = db.users.find_one({"_id": ObjectId(user_id)}, {"_id": 0, "name": 1, "wishlist": 1, "inventory": 1})
+    # Get the user's inventory and wishlist
+    user = db.users.find_one({"_id": ObjectId(user_id)}, {"wishlist": 1, "inventory": 1, "name": 1})
     if not user:
-        print("User not found for ID:", user_id)
         return "User not found", 404
 
+    # Fetch books in inventory
     inventory = list(
         db.books.find(
             {"_id": {"$in": [ObjectId(book_id) for book_id in user.get("inventory", [])]}},
-            {"_id": 0, "title": 1, "author": 1, "description": 1}
+            {"_id": 1, "title": 1, "author": 1, "description": 1}
         )
     )
+    for book in inventory:
+        book["_id"] = str(book["_id"])  # Convert ObjectId to string for rendering
 
+    # Fetch books in wishlist
     wishlist = list(
         db.books.find(
             {"_id": {"$in": [ObjectId(book_id) for book_id in user.get("wishlist", [])]}},
-            {"_id": 0, "title": 1, "author": 1, "description": 1}
+            {"_id": 1, "title": 1, "author": 1, "description": 1}
         )
     )
+    for book in wishlist:
+        book["_id"] = str(book["_id"])  # Convert ObjectId to string for rendering
 
     return render_template('user.html', name=user["name"], inventory=inventory, wishlist=wishlist)
 
