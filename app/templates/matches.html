@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Matches</title>
     <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
@@ -19,5 +19,50 @@
             </div>
         </header>
     </div>
+
+
+    <h1>Your Wishlist & Inventory</h1>
+
+    <h2>Wishlist</h2>
+    <ul>
+        {% for book in wishlist %}
+            <li>{{ book }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Inventory</h2>
+    <ul>
+        {% for book in inventory %}
+            <li>{{ book }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Matches</h2>
+    {% if matches %}
+        <ul>
+        {% for match in matches %}
+            <li>
+                <strong>{{ match.name }}</strong>
+                <p>Give Books:</p>
+                <ul>
+                    {% for book in match.give_books %}
+                        <li>{{ book.title }} by {{ book.author }}</li>
+                    {% endfor %}
+                </ul>
+                <p>Receive Books:</p>
+                <ul>
+                    {% for book in match.receive_books %}
+                        <li>{{ book.title }} by {{ book.author }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+
 </body>
 </html>
+
