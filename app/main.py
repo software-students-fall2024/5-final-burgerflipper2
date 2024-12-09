@@ -4,7 +4,7 @@ import pymongo
 import gridfs
 from dotenv import load_dotenv
 import flask_login
-from login import init_login, create_login_routes
+from app.login import init_login, create_login_routes
 from bson import ObjectId
 
 # Load environment variables from .env file
@@ -58,13 +58,10 @@ def user():
 
     return render_template('user.html', name=user["name"], inventory=inventory, wishlist=wishlist)
 
-
 @app.route('/matches')
 @flask_login.login_required
 def matches():
-    # HARDCODED! CHANGE LATER
-    # WHEN LOGIN/LOGOUT FUNCTION IS ADDED
-    current_user_id = "user1"
+    current_user_id = "user1"  # HARDCODED! Change this when login/logout functionality is added
 
     user = db.users.find_one({"id": current_user_id}, {"_id": 0, "name": 1, "wishlist": 1, "inventory": 1})
     
@@ -96,9 +93,12 @@ def matches():
         receive_books = set(user["wishlist"]).intersection(other_inventory)
 
         if give_books and receive_books:
+            limited_give_books = list(give_books)[:len(receive_books)]
+            limited_receive_books = list(receive_books)[:len(give_books)]
             matches.append({
                 "name": other_user["name"],
-                "give_books": list(db.books.find({"id": {"$in": list(give_books)}}, {"_id": 0, "title": 1, "author": 1})),
+                "id": other_user["id"],  
+                "give_books": list(db.books.find({"id": {"$in": list(limited_give_books)}}, {"_id": 0, "title": 1, "author": 1})),
                 "receive_books": list(db.books.find({"id": {"$in": list(receive_books)}}, {"_id": 0, "title": 1, "author": 1}))
             })
 
@@ -111,5 +111,54 @@ def matches():
     
     return render_template('matches.html', matches=matches, inventory=inventory, wishlist=wishlist)
 
+
+
+
+
+@app.route('/trade_request/<requester_id>', methods=['GET'])
+@flask_login.login_required
+def trade_request(requester_id):
+    current_user_id = "user1"
+    current_user = db.users.find_one({"id": current_user_id})
+    requester = db.users.find_one({"id": requester_id})
+
+    give_books = list(db.books.find({"id": {"$in": current_user['inventory']}}))
+    receive_books = list(db.books.find({"id": {"$in": requester['wishlist']}}))
+
+    return render_template('trade_request.html', 
+                           requester_name=requester['name'],
+                           give_books=give_books, 
+                           receive_books=receive_books,
+                           requester_id=requester_id)
+
+
+@app.route('/accept_trade/<requester_id>', methods=['POST'])
+@flask_login.login_required
+def accept_trade(requester_id):
+    current_user_id = "user1"
+    current_user = db.users.find_one({"id": current_user_id})
+    requester = db.users.find_one({"id": requester_id})
+
+    give_books = list(db.books.find({"id": {"$in": current_user['inventory']}}))
+    receive_books = list(db.books.find({"id": {"$in": requester['wishlist']}}))
+    
+    db.users.update_one(
+        {"id": current_user_id},
+        {"$push": {"inventory": {"$each": requester["wishlist"]}}},
+    )
+    db.users.update_one(
+        {"id": requester_id},
+        {"$push": {"inventory": {"$each": current_user["wishlist"]}}},
+    )
+
+    return render_template('trade_accepted.html', 
+                           requester_name=requester['name'],
+                           received_books=receive_books,
+                           given_books=give_books,
+                           contact_email=requester['email'])
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)
+
+

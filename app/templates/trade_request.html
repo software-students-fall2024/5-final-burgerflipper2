@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+    <!-- header -->
+    <div class="header-container">
+        <header class="header">
+            <a href="/" class="header-title-link">
+                <h1 class="header-title">BookSwap</h1>
+            </a>
+            <div class="header-buttons">
+                <a href="/matches" class="button-primary">find new books!</a>
+                <a href="/user" class="button-secondary">user</a>
+            </div>
+        </header>
+    </div>
+
+
+    <div class="container mt-4">
+        <h1>Trade Request</h1>
+    
+        <h3>{{ requester_name }} wants to trade with you!</h3>
+    
+        <p><strong>Books you can give:</strong></p>
+        <ul>
+            {% for book in give_books %}
+                <li>{{ book.title }} by {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    
+        <p><strong>Books you can receive:</strong></p>
+        <ul>
+            {% for book in receive_books %}
+                <li>{{ book.title }} by {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    
+        <form action="{{ url_for('accept_trade', requester_id=requester_id) }}" method="POST">
+            <button type="submit" class="btn btn-success">Accept Trade</button>
+        </form>
+    
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+    </div>
+
+
+
+</body>
+</html>
+

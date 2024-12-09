@@ -21,46 +21,38 @@
     </div>
 
 
-    <h1>Your Wishlist & Inventory</h1>
+    <div class="container mt-4">
+        <h1>Possible Trade Matches</h1>
+    
+        {% if matches %}
+            <ul class="list-group">
+                {% for match in matches %}
+                <p>
+                    <a href="{{ url_for('trade_request', requester_id=match['id']) }}">Trade with {{ match['name'] }}</a>
+                    <ul>
+                        <li>Give books: 
+                            <ul>
+                                {% for book in match['give_books'] %}
+                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li>Receive books: 
+                            <ul>
+                                {% for book in match['receive_books'] %}
+                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                </p>
+                 {% endfor %}
 
-    <h2>Wishlist</h2>
-    <ul>
-        {% for book in wishlist %}
-            <li>{{ book }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Inventory</h2>
-    <ul>
-        {% for book in inventory %}
-            <li>{{ book }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Matches</h2>
-    {% if matches %}
-        <ul>
-        {% for match in matches %}
-            <li>
-                <strong>{{ match.name }}</strong>
-                <p>Give Books:</p>
-                <ul>
-                    {% for book in match.give_books %}
-                        <li>{{ book.title }} by {{ book.author }}</li>
-                    {% endfor %}
-                </ul>
-                <p>Receive Books:</p>
-                <ul>
-                    {% for book in match.receive_books %}
-                        <li>{{ book.title }} by {{ book.author }}</li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>{{ message }}</p>
-    {% endif %}
+            </ul>
+        {% else %}
+            <p>No matches found!</p>
+        {% endif %}
+    </div>
 
 
 </body>
