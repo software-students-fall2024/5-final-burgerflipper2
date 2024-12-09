@@ -19,32 +19,39 @@
             </div>
         </header>
     </div>
-
-
-    <div class="container mt-4">
-        <h1>Trade Request</h1>
-    
-        <h3>{{ requester_name }} wants to trade with you!</h3>
+    <!-- trade request  -->
+    <div class="content-container">
+        <h1 class="trade-matches">Trade Request</h1>
+        <h2>{{ requester_name }} wants to trade with you!</h2>
     
         <p><strong>Books you can give:</strong></p>
-        <ul>
-            {% for book in give_books %}
-                <li>{{ book.title }} by {{ book.author }}</li>
-            {% endfor %}
-        </ul>
+            <div class="book-list-container">
+                {% for book in give_books %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
     
         <p><strong>Books you can receive:</strong></p>
-        <ul>
-            {% for book in receive_books %}
-                <li>{{ book.title }} by {{ book.author }}</li>
-            {% endfor %}
-        </ul>
-    
+            <div class="book-list-container">
+                {% for book in receive_books %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         <form action="{{ url_for('accept_trade', requester_id=requester_id) }}" method="POST">
-            <button type="submit" class="btn btn-success">Accept Trade</button>
+            <button type="submit" class="search-button">Accept Trade</button>
         </form>
     
-        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Cancel Request</a>
     </div>
 
 

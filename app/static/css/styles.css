@@ -161,3 +161,11 @@ body {
 .user-greeting {
     font-size: 20pt;
 }
+
+.trade-matches {
+    margin-top: 50px;
+}
+
+.details {
+    margin-bottom: 0px;
+}

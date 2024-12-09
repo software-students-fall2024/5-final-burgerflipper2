@@ -19,39 +19,43 @@
             </div>
         </header>
     </div>
-
-
-    <div class="container mt-4">
-        <h1>Trade Accepted!</h1>
-    
-        <div class="alert alert-success" role="alert">
+    <!-- accepted -->
+    <div class="content-container">
+        <h1 class="trade-matches">Trade Accepted!</h1>
+        <div role="alert">
             <strong>Congratulations!</strong> You have successfully accepted the trade request from <strong>{{ requester_name }}</strong>.
         </div>
     
-        <h3>Trade Details:</h3>
+        <h2 class="details">Trade Details:</h2>
         <p><strong>Books you will receive:</strong></p>
-        <ul>
-            {% for book in received_books %}
-                <li>{{ book.title }} by {{ book.author }}</li>
-            {% endfor %}
-        </ul>
-    
+            <div class="book-list-container">
+                {% for book in received_books %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book['title'] }}</h3>
+                        <p class="book-author">by {{ book['author'] }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>    
         <p><strong>Books you will give away:</strong></p>
-        <ul>
+        <div class="book-list-container">
             {% for book in given_books %}
-                <li>{{ book.title }} by {{ book.author }}</li>
+            <div class="book">
+                <div class="book-details">
+                    <h3 class="book-title">{{ book['title'] }}</h3>
+                    <p class="book-author">by {{ book['author'] }}</p>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
+        </div>   
     
-        <h3>Contact Information:</h3>
-        <p><strong>Name:</strong> {{ requester_name }}</p>
+        <h3 class="details">Contact Information:</h3>
+        <p class="details"><strong>Name:</strong> {{ requester_name }}</p>
         <p><strong>Email:</strong> {{ contact_email }}</p>
     
         <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
     </div>
-
-
-
 </body>
 </html>
 
