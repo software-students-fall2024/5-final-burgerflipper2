@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Matches</title>
     <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
@@ -19,5 +19,42 @@
             </div>
         </header>
     </div>
+
+
+    <div class="container mt-4">
+        <h1>Possible Trade Matches</h1>
+    
+        {% if matches %}
+            <ul class="list-group">
+                {% for match in matches %}
+                <p>
+                    <a href="{{ url_for('trade_request', requester_id=match['id']) }}">Trade with {{ match['name'] }}</a>
+                    <ul>
+                        <li>Give books: 
+                            <ul>
+                                {% for book in match['give_books'] %}
+                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li>Receive books: 
+                            <ul>
+                                {% for book in match['receive_books'] %}
+                                    <li>{{ book['title'] }} by {{ book['author'] }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                </p>
+                 {% endfor %}
+
+            </ul>
+        {% else %}
+            <p>No matches found!</p>
+        {% endif %}
+    </div>
+
+
 </body>
 </html>
+

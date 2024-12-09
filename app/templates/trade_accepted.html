@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+    <!-- header -->
+    <div class="header-container">
+        <header class="header">
+            <a href="/" class="header-title-link">
+                <h1 class="header-title">BookSwap</h1>
+            </a>
+            <div class="header-buttons">
+                <a href="/matches" class="button-primary">find new books!</a>
+                <a href="/user" class="button-secondary">user</a>
+            </div>
+        </header>
+    </div>
+
+
+    <div class="container mt-4">
+        <h1>Trade Accepted!</h1>
+    
+        <div class="alert alert-success" role="alert">
+            <strong>Congratulations!</strong> You have successfully accepted the trade request from <strong>{{ requester_name }}</strong>.
+        </div>
+    
+        <h3>Trade Details:</h3>
+        <p><strong>Books you will receive:</strong></p>
+        <ul>
+            {% for book in received_books %}
+                <li>{{ book.title }} by {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    
+        <p><strong>Books you will give away:</strong></p>
+        <ul>
+            {% for book in given_books %}
+                <li>{{ book.title }} by {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    
+        <h3>Contact Information:</h3>
+        <p><strong>Name:</strong> {{ requester_name }}</p>
+        <p><strong>Email:</strong> {{ contact_email }}</p>
+    
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+    </div>
+
+
+
+</body>
+</html>
+
