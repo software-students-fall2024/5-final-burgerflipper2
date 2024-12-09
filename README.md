@@ -1,8 +1,8 @@
 # BookKeeper README
 
-![MongoDb](https://github.com/software-students-fall2024/5-final-burgerflipper2/actions/workflows/mongodb-workflow.yml)
+![MongoDb](https://github.com/software-students-fall2024/5-final-burgerflipper2/actions/workflows/mongodb-workflow.yml/badge.svg)
 
-![Webapp](https://github.com/software-students-fall2024/5-final-burgerflipper2/actions/workflows/webapp-workflow.yml)
+![Webapp](https://github.com/software-students-fall2024/5-final-burgerflipper2/actions/workflows/webapp-workflow.yml/badge.svg)
 
 # Project Description
 
