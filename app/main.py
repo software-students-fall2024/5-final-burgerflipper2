@@ -4,7 +4,7 @@ import pymongo
 import gridfs
 from dotenv import load_dotenv
 import flask_login
-from app.login import init_login, create_login_routes
+from login import init_login, create_login_routes
 
 # Load environment variables from .env file
 load_dotenv()
