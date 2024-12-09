@@ -12,7 +12,7 @@ COPY Pipfile Pipfile.lock ./
 
 RUN pipenv install --system --deploy
 
-COPY . .
+COPY . /app
 
 EXPOSE 3000
 

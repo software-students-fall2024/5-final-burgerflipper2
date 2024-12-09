@@ -1,7 +1,7 @@
 python-dotenv
 pymongo
 Flask==2.0.1
-flask_login==0.5.0
+Flask-Login==0.5.0
 Jinja2==3.0.3
 Werkzeug==2.0.1
 itsdangerous==2.0.1

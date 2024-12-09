@@ -6,8 +6,8 @@ db.createCollection('books');
 
 // sample data
 db.users.insertMany([
-    {id: "user1", name: "Maddy", wishlist:["book1", "book2"], inventory:["book3", "book4"]},
-    {id: "user2", name: "John", wishlist:["book5", "book3"], inventory:["book1", "book6"]},
+    {id: "user1", name: "Maddy", email: "maddy@example.com", password: "password123", wishlist:["book1", "book2"], inventory:["book3", "book4"]},
+    {id: "user2", name: "John", email: "john@example.com", password: "password123", wishlist:["book5", "book3"], inventory:["book1", "book6"]},
 ])
 
 db.books.insertMany([
