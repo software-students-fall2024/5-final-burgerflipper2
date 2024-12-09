@@ -3,19 +3,24 @@ from pymongo import MongoClient
 from bson import ObjectId #to handle mongodb's objectid type
 import flask_login
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 login_manager = flask_login.LoginManager()
 login_manager.login_view = 'login'
 
-# Mock database
-MONGO_URI = os.getenv('MONGO_URI')
-db_name = os.getenv("DB_NAME")
+# Database connection
+MONGO_URI = os.getenv('MONGO_URI', "mongodb://localhost:27017")
+db_name = os.getenv("DB_NAME", "bookkeeping")
 client = MongoClient(MONGO_URI)
 db = client[db_name]
 users = db["users"]
 
 class User(flask_login.UserMixin):
     pass
+
 @login_manager.user_loader
 def load_user(user_id):
     user_data = users.find_one({'_id': ObjectId(user_id)})
@@ -28,7 +33,7 @@ def load_user(user_id):
 
 def init_login(app):
     login_manager.init_app(app)
-    app.secret_key = os.getenv('SECRET_KEY')
+    app.secret_key = os.getenv('SECRET_KEY', 'default-secret-key')
     
 def create_login_routes(app):
     @app.route('/login', methods=['GET', 'POST'])
