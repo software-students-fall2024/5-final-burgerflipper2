@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pymongo
 import gridfs
 from dotenv import load_dotenv
@@ -16,6 +16,7 @@ mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 db_name = os.getenv("DB_NAME", "bookkeeping")
 client = pymongo.MongoClient(mongo_uri)
 db = client[db_name]
+books = db["books"]
 users = db["users"]
 fs = gridfs.GridFS(db)
 
@@ -26,8 +27,63 @@ create_login_routes(app)
 @app.route('/')
 @flask_login.login_required
 def home():
-    books = list(db.books.find({}, {"_id": 0, "title": 1, "author": 1, "description": 1}))
+    user_id = flask_login.current_user.id
+
+    # Get the user's wishlist
+    user = db.users.find_one({"_id": ObjectId(user_id)}, {"wishlist": 1})
+    wishlist_ids = user.get("wishlist", [])
+
+    # Fetch books not in the user's wishlist
+    books = list(
+        db.books.find(
+            {"_id": {"$nin": [ObjectId(book_id) for book_id in wishlist_ids]}},
+            {"_id": 1, "title": 1, "author": 1, "description": 1}
+        )
+    )
+    for book in books:
+        book["_id"] = str(book["_id"])  # Convert ObjectId to string for rendering
+
     return render_template('home.html', books=books)
+
+@app.route('/add', methods=['POST'])
+@flask_login.login_required
+def add_to_wishlist():
+    user_id = flask_login.current_user.id
+    book_id = request.form.get('book_id')
+
+    if not book_id:
+        return redirect(url_for('home', message='failed_add'))
+
+    # Add the book to the user's wishlist
+    result = db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$addToSet": {"wishlist": ObjectId(book_id)}}
+    )
+
+    if result.modified_count == 0:
+        return redirect(url_for('home', message='failed_add'))
+
+    return redirect(url_for('home', message='success_add'))
+
+@app.route('/wishlist/remove', methods=['POST'])
+@flask_login.login_required
+def remove_from_wishlist():
+    user_id = flask_login.current_user.id
+    book_id = request.form.get('book_id')
+
+    if not book_id:
+        return "Book ID is required", 400
+
+    # Update the user's wishlist
+    result = db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$pull": {"wishlist": ObjectId(book_id)}}
+    )
+
+    if result.modified_count == 0:
+        return "Failed to remove book from wishlist", 500
+
+    return redirect(url_for('user'))
 
 @app.route('/search', methods=['GET'])
 @flask_login.login_required
