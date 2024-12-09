@@ -38,6 +38,10 @@
                         <p class="book-author">by {{ book.author }}</p>
                         <p class="book-description">{{ book.description }}</p>
                     </div>
+                    <form action="{{ url_for('add_to_wishlist') }}" method="POST">
+                        <input type="hidden" name="book_id" value="{{ book._id }}">
+                        <button type="submit" class="add-button">Add to Wishlist</button>
+                    </form>
                     <form action="{{ url_for('add_to_inventory') }}" method="POST">
                         <input type="hidden" name="book_id" value="{{ book._id }}">
                         <button type="submit" class="add-button">Add to Inventory</button>

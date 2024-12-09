@@ -29,14 +29,16 @@ create_login_routes(app)
 def home():
     user_id = flask_login.current_user.id
 
-    # Get the user's inventory
-    user = db.users.find_one({"_id": ObjectId(user_id)}, {"inventory": 1})
+    # Get the user's wishlist and inventory
+    user = db.users.find_one({"_id": ObjectId(user_id)}, {"wishlist": 1, "inventory": 1})
+    wishlist_ids = user.get("wishlist", [])
     inventory_ids = user.get("inventory", [])
 
-    # Fetch books not in the user's inventory
+    # Exclude books in wishlist or inventory
+    excluded_ids = wishlist_ids + inventory_ids
     books = list(
         db.books.find(
-            {"_id": {"$nin": [ObjectId(book_id) for book_id in inventory_ids]}},
+            {"_id": {"$nin": [ObjectId(book_id) for book_id in excluded_ids]}},
             {"_id": 1, "title": 1, "author": 1, "description": 1}
         )
     )
@@ -45,6 +47,7 @@ def home():
 
     return render_template('home.html', books=books)
 
+# inventory
 @app.route('/add', methods=['POST'])
 @flask_login.login_required
 def add_to_inventory():
@@ -85,6 +88,47 @@ def delete_from_inventory():
 
     return redirect(url_for('user', message='success_delete'))
 
+# wishlist
+@app.route('/wishlist/add', methods=['POST'])
+@flask_login.login_required
+def add_to_wishlist():
+    user_id = flask_login.current_user.id
+    book_id = request.form.get('book_id')
+
+    if not book_id:
+        return redirect(url_for('home', message='failed_add'))
+
+    # Add the book to the user's wishlist
+    result = db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$addToSet": {"wishlist": ObjectId(book_id)}}
+    )
+
+    if result.modified_count == 0:
+        return redirect(url_for('home', message='failed_add'))
+
+    return redirect(url_for('home', message='success_add'))
+
+@app.route('/wishlist/remove', methods=['POST'])
+@flask_login.login_required
+def remove_from_wishlist():
+    user_id = flask_login.current_user.id
+    book_id = request.form.get('book_id')
+
+    if not book_id:
+        return redirect(url_for('user', message='failed_remove'))
+
+    # Remove the book from the user's wishlist
+    result = db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$pull": {"wishlist": ObjectId(book_id)}}
+    )
+
+    if result.modified_count == 0:
+        return redirect(url_for('user', message='failed_remove'))
+
+    return redirect(url_for('user', message='success_remove'))
+
 @app.route('/search', methods=['GET'])
 @flask_login.login_required
 def search():
@@ -104,7 +148,7 @@ def search():
 def user():
     user_id = flask_login.current_user.id
 
-    # Get the user's inventory and wishlist
+    # Get the user's wishlist and inventory
     user = db.users.find_one({"_id": ObjectId(user_id)}, {"wishlist": 1, "inventory": 1, "name": 1})
     if not user:
         return "User not found", 404
