@@ -1,14 +1,14 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 import pymongo
 import gridfs
 from dotenv import load_dotenv
 import flask_login
-from app.login import init_login, create_login_routes
+from login import init_login, create_login_routes
+from bson.objectid import ObjectId 
 
 # Load environment variables from .env file
 load_dotenv()
-
 app = Flask(__name__)
 
 # mongodb
@@ -29,27 +29,39 @@ def home():
     books = list(db.books.find({}, {"_id": 0, "title": 1, "author": 1, "description": 1}))
     return render_template('home.html', books=books)
 
+@app.route('/search', methods=['GET'])
+@flask_login.login_required
+def search():
+    query = request.args.get('query', '')
+    # Search books by title, genre, or author
+    books = list(db.books.find(
+        {"$or": [
+            {"title": {"$regex": query, "$options": "i"}},
+            {"author": {"$regex": query, "$options": "i"}}
+        ]}, 
+        {"_id": 0, "title": 1, "author": 1, "description": 1}
+    ))
+    return render_template('home.html', books=books)
+
 @app.route('/user')
 @flask_login.login_required
 def user():
-    # HARDCODED! CHANGE LATER
-    # WHEN LOGIN/LOGOUT FUNCTION IS ADDED
-    user_id = "user1"
+    user_id = flask_login.current_user.id
 
-    user = db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "wishlist": 1, "inventory": 1})
+    user = db.users.find_one({"_id": ObjectId(user_id)}, {"_id": 0, "name": 1, "wishlist": 1, "inventory": 1})
     if not user:
         return "User not found", 404
 
     inventory = list(
         db.books.find(
-            {"id": {"$in": user["inventory"]}},
+            {"_id": {"$in": [ObjectId(book_id) for book_id in user.get("inventory", [])]}},
             {"_id": 0, "title": 1, "author": 1, "description": 1}
         )
     )
 
     wishlist = list(
         db.books.find(
-            {"id": {"$in": user["wishlist"]}},
+            {"_id": {"$in": [ObjectId(book_id) for book_id in user.get("wishlist", [])]}},
             {"_id": 0, "title": 1, "author": 1, "description": 1}
         )
     )
