@@ -59,11 +59,12 @@ def create_login_routes(app):
         if request.method == 'POST':
             email = request.form['email'].strip().lower()
             password = request.form['password']
+            name = request.form['name']
             
             if users.find_one({'email': email}):
                 return render_template('signup.html', error='Email already exists')
             
-            users.insert_one({'email': email, 'password': password})
+            users.insert_one({'email': email, 'password': password, 'name': name, 'inventory': [], 'wishlist': []})
             return redirect(url_for('login'))
         return render_template('signup.html')
     
@@ -73,7 +74,7 @@ def create_login_routes(app):
         print(f'Logged in: {flask_login.current_user.id}')
         return redirect(url_for('home'))
     
-    @app.route('/logout')
+    @app.route('/logout', methods=['GET', 'POST'])
     @flask_login.login_required
     def logout():
         print(f'Logged out: {flask_login.current_user.id}')
