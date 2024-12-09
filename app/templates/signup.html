@@ -15,27 +15,24 @@
             </a>
             <div class="header-buttons">
                 <a href="/matches" class="button-primary">find new books!</a>
-                <!-- make it so that if user not logged in, this says 'log in' -->
                 <a href="/user" class="button-secondary">user</a>
             </div>
         </header>
     </div>
-    <!-- add  generic user info / logout functionality -->
-    <!-- my collection -->
     <div class="content-container">
         <section class="book-list-container">
-            <!-- logged in user name -->
             <div class="user-greeting">
                 <h1> Sign up</h1>
             </div>
             <form action="{{ url_for('signup') }}" method="POST">
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="name" placeholder="name" required><br>
-                <label for="email">Email:</label><br>
-                <input type="text" id="email" name="email" placeholder="email" required><br>
-                <label for="password">Password:</label><br>
-                <input type="password" id="password" name="password" placeholder="password" required><br>
-                <input type="submit" value="Signup">
+                <h3> Name: </h3>
+                <input type="text" id="name" name="name" class="login-bar" placeholder="name" required><br>
+                <h3> Email: </h3>
+                <input type="text" id="email" name="email" class="login-bar" placeholder="email" required><br>
+                <h3> Password: </h3>
+                <input type="password" id="password" name="password" class="login-bar" placeholder="password" required><br>
+                <br>
+                <input type="submit" class ="login-button" value="Signup">
             </form>
             <p>Have an account? <a href="{{ url_for('login') }}">Login</a></p>
         </section>
