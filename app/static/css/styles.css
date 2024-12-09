@@ -80,7 +80,7 @@ body {
     margin-bottom: 20px; 
 }
 
-.search-bar {
+.search-bar, .login-bar {
     width: 400px;
     padding: 10px 15px;
     font-size: 16px;
@@ -148,7 +148,7 @@ body {
     line-height: 1.4;
 }
 
-.add-button, .delete-button {
+.add-button, .delete-button, .login-button {
     padding: 10px 15px;
     background-color: #F3D0D7;
     color: white;
