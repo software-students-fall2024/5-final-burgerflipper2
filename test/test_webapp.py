@@ -1,9 +1,13 @@
-import pytest
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.main import app
+# Add the 'app' directory to the sys.path so we can import from it
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'app'))
+
+# Now you can import from 'app.main'
+from main import app
+
+import pytest
 
 @pytest.fixture
 def client():
